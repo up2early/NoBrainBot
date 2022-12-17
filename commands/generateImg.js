@@ -21,12 +21,10 @@ module.exports = {
 		// Delay the reply so the user knows the bot is working
 		await interaction.deferReply();
 
-		logger.info("Generating image...");
 		const prompt = interaction.options.getString("prompt");
-		logger.info("Prompt: " + prompt);
+		logger.info("Generating image with prompt: " + prompt);
 
 		// Send the prompt to the Hugging Face API
-		let base64Img;
 		await fetch(
 			"https://up2early-stabilityai-stable-diffusion-2.hf.space/run/predict",
 			{
@@ -39,39 +37,43 @@ module.exports = {
 		)
 			.then((r) => r.json())
 			.then((r) => {
-				base64Img = r.data[0].split(",")[1];
-			});
+				logger.info("Image generated, uploading to imgBB...");
 
-		// Send the image to imgBB
-		logger.info("Image generated, uploading to imgBB...")
-		let imageURL;
-		await imgbbUploader({
-			apiKey: imgBBKey,
-			base64string: base64Img,
-			name: "prompt",
-		})
-			.then((response) => {
-				imageURL = response.url;
+				// Prepare image for uploading
+				const base64Img = r.data[0].split(",")[1];
+
+				// Upload the image to imgBB
+				imgbbUploader({
+					apiKey: imgBBKey,
+					base64string: base64Img,
+					name: "prompt",
+				})
+					.then((response) => {
+						logger.info("Image uploaded to imgBB, sending to Discord...");
+
+						// Get the URL
+						imageURL = response.url;
+
+						// Create the embed image
+						const discordEmbed = new EmbedBuilder()
+							.setColor(0x0099ff)
+							.setTitle(prompt)
+							.setImage(imageURL)
+							.setTimestamp();
+
+						// send the reply
+						return interaction.editReply({
+							embeds: [discordEmbed],
+						});
+					})
 			})
 			.catch((error) => {
+				logger.error("Error in request chain, error below");
 				logger.error(error);
 				return interaction.editReply(
-					"Error sending request to imgBB, please try again."
+					"Error with request, please try again."
 				);
 			});
-		
-		logger.info("Image uploaded to imgBB at " + imageURL + ", sending to Discord...");
 
-		// Create the embed image
-		const discordEmbed = new EmbedBuilder()
-			.setColor(0x0099ff)
-			.setTitle(prompt)
-			.setImage(imageURL)
-			.setTimestamp();
-
-		// send the reply
-		return interaction.editReply({
-			embeds: [discordEmbed],
-		});
 	},
 };
