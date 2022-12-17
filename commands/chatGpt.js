@@ -14,7 +14,7 @@ const generateResponse = async (prompt) => {
   const openai = new OpenAIApi(configuration);
 
   const response = await openai.createCompletion({
-    model: "text-curie-001",
+    model: "text-davinci-003",
     prompt: prompt,
     temperature: 0.7,
     max_tokens: 256,
