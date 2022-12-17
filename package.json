@@ -22,7 +22,8 @@
     "imgbb-uploader": "^1.5.0",
     "node-fetch": "2.6.7",
     "openai": "^3.1.0",
-    "pino": "^8.8.0"
+    "pino": "^8.8.0",
+    "pino-pretty": "^9.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",
