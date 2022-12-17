@@ -5,7 +5,7 @@ const {
 } = require("discord.js");
 const { imgBBKey } = require("../config.js");
 const imgbbUploader = require("imgbb-uploader");
-const logger = require('pino')()
+const logger = require('pino')();
 
 const generateUploadPost = async (interaction) => {
 
