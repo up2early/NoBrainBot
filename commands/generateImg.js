@@ -30,7 +30,7 @@ const generateUploadPost = async (interaction) => {
 		embeds: [discordEmbed],
 	})
 
-	logger.info("Image sent do discord successfully!");
+	logger.info("Image sent to discord successfully!");
 }
 
 const generateImg = async (prompt) => {
