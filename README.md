@@ -12,6 +12,12 @@
 
 ## Deployment
 
+### Kubernetes
+1. Rename `deployment.yaml.example` to `deployment.yaml`
+2. Fill in environment variables
+3. Setup / connect to kubernetes
+3. Run `kubectl apply -f deployment.yaml`
+
 ### Local
 1. Clone repo
 2. Install dependencies with command `npm install` or `yarn`
