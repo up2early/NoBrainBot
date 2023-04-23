@@ -28,4 +28,4 @@
 
 ### Docker Development
 1. `docker build . -t <YOURNAME/PROJECT>`
-2. `docker run -p 49160:8080 -d --env-file=.env logan/stablediffusion`
+2. `docker run -d -p 49160:8080 --env-file=.env loganinak/nobrainbot`
