@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nobrainbot
+spec:
+  selector:
+    matchLabels:
+      app: nobrainbot
+  template:
+    metadata:
+      labels:
+        app: nobrainbot
+    spec:
+      containers:
+      - name: nobrainbot
+        image: loganinak/nobrainbot:latest
+        env:
+        - name: TOKEN
+          value: ""
+        - name: CLIENT_ID
+          value: ""
+        - name: OPENAI_KEY
+          value: ""
+        ports:
+        - containerPort: 8080
+

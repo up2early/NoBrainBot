@@ -1,20 +1,23 @@
+# Use an official Node.js runtime as the base image
 FROM node:16
 
-# Create app directory
-WORKDIR /usr/src/app
+# Set the working directory
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# Copy package.json and package-lock.json (if available) into the working directory
 COPY package*.json ./
 
-RUN npm install
-RUN npm install -g pino-pretty
-# If you are building your code for production
-# RUN npm ci --only=production
+# Install app dependencies
+RUN npm ci
 
-# Bundle app source
+# Install pino-pretty globally
+RUN npm install -g pino-pretty
+
+# Copy the application source code into the working directory
 COPY . .
 
+# Expose the application port
 EXPOSE 8080
-CMD [ "/bin/sh", "-c", "node app.js | pino-pretty" ]
+
+# Run the deploy-commands script and then start the application using pino-pretty
+CMD [ "/bin/sh", "-c", "node deploy-commands && node app.js | pino-pretty" ]
