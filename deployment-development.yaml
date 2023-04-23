@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nobrainbot
+  namespace: development
 spec:
   selector:
     matchLabels:
@@ -14,13 +15,9 @@ spec:
       containers:
       - name: nobrainbot
         image: loganinak/nobrainbot:latest
-        env:
-        - name: TOKEN
-          value: ""
-        - name: CLIENT_ID
-          value: ""
-        - name: OPENAI_KEY
-          value: ""
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: my-env-secret
         ports:
         - containerPort: 8080
-

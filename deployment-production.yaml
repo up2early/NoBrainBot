@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nobrainbot
+  namespace: production
+spec:
+  selector:
+    matchLabels:
+      app: nobrainbot
+  template:
+    metadata:
+      labels:
+        app: nobrainbot
+    spec:
+      containers:
+      - name: nobrainbot
+        image: loganinak/nobrainbot:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: my-env-secret
+        ports:
+        - containerPort: 8080
