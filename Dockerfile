@@ -17,4 +17,4 @@ RUN npm install -g pino-pretty
 COPY . .
 
 EXPOSE 8080
-CMD [ "/bin/sh", "-c", "node app.js | pino-pretty" ]
+CMD [ "/bin/sh", "-c", "node deploy-commands && node app.js | pino-pretty" ]
