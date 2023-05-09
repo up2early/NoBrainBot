@@ -3,7 +3,7 @@ const {
 	EmbedBuilder
 } = require('discord.js');
 const logger = require('pino')();
-const { Configuration, OpenAIApi, error: OpenAIError } = require('openai');
+const { Configuration, OpenAIApi, OpenAIError } = require('openai');
 const { openaiKey } = require('../config.js');
 
 const generateImage = async (prompt) => {
@@ -12,28 +12,16 @@ const generateImage = async (prompt) => {
 	});
 	const openai = new OpenAIApi(configuration);
 
-	try {
-		const response = await openai.createImage({
-			prompt: prompt,
-			n: 1,
-			size: '1024x1024',
-		}, {
-			timeout: 30000,
-		});
-		return response.data.data[0].url;
-	} catch (error) {
-		if (error instanceof OpenAIError.RateLimitError) {
-			logger.error('Rate limit error:', error);
-			throw new Error('Rate limit exceeded, please try again later.');
-		} else if (error instanceof OpenAIError.APIError) {
-			logger.error('API error:', error);
-			throw new Error('An error occurred with the API, please try again later.');
-		} else {
-			logger.error('Unexpected error:', error);
-			throw new Error('An unexpected error occurred, please try again later.');
-		}
-	}
-};
+	const response = await openai.createImage({
+		prompt: prompt,
+		n: 1,
+		size: '1024x1024',
+	}, {
+		timeout: 30000,
+	});
+
+	return response.data.data[0].url;
+}
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -55,7 +43,7 @@ module.exports = {
 
 		try {
 			const imageUrl = await generateImage(prompt);
-			console.log("Attaching image with URL: ", imageUrl)
+			logger.info("Attaching image with URL: " + imageUrl)
 
 			// Create the embed with the image
 			const discordEmbed = new EmbedBuilder()
@@ -71,9 +59,13 @@ module.exports = {
 
 			logger.info('Image sent to discord successfully!');
 		} catch (error) {
-			logger.error('Error in generating image, error below');
-			logger.error(error);
-			interaction.editReply(error.message);
+			if (error.response) {
+				logger.error('Error generating image, reason: ' + error.response.data.error.message);
+				interaction.editReply(error.response.data.error.message);
+			  } else {
+				logger.error('Error generating image, reason: ', error.message);
+				interaction.editReply(error.message);
+			  }
 		}
 	},
 };
