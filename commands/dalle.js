@@ -1,9 +1,10 @@
 const {
 	SlashCommandBuilder,
-	EmbedBuilder
+	EmbedBuilder,
+	AttachmentBuilder
 } = require('discord.js');
 const logger = require('pino')();
-const { Configuration, OpenAIApi, OpenAIError } = require('openai');
+const { Configuration, OpenAIApi } = require('openai');
 const { openaiKey } = require('../config.js');
 
 const generateImage = async (prompt) => {
@@ -45,16 +46,19 @@ module.exports = {
 			const imageUrl = await generateImage(prompt);
 			logger.info("Attaching image with URL: " + imageUrl)
 
+			attachmentName = Date.now() + ".jpg";
+			const attachment = new AttachmentBuilder(imageUrl).setName(attachmentName);
+
 			// Create the embed with the image
 			const discordEmbed = new EmbedBuilder()
 				.setColor(0x0099ff)
 				.setTitle(prompt)
-				.setImage(imageUrl)
+				.setImage('attachment://' + attachmentName)
 				.setTimestamp();
 
 			// Send the reply
 			await interaction.editReply({
-				embeds: [discordEmbed],
+				embeds: [discordEmbed], files: [attachment]
 			});
 
 			logger.info('Image sent to discord successfully!');

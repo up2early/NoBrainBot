@@ -64,9 +64,13 @@ module.exports = {
         logger.info("Response sent to discord successfully!");
       })
       .catch((error) => {
-        logger.error("Error in generating response, error below");
-        logger.error(error);
-        interaction.editReply("Error with request, please try again.");
+        if (error.response) {
+          logger.error('Error generating response, reason: ' + error.response.data.error.message);
+          interaction.editReply(error.response.data.error.message);
+        } else {
+          logger.error('Error generating response, reason: ', error.message);
+          interaction.editReply(error.message);
+        }
       });
   },
 };
