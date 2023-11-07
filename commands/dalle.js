@@ -3,25 +3,19 @@ const {
 	EmbedBuilder,
 	AttachmentBuilder
 } = require('discord.js');
+const { OpenAI } = require('openai');
 const logger = require('pino')();
-const { Configuration, OpenAIApi } = require('openai');
-const { openaiKey } = require('../config.js');
 
 const generateImage = async (prompt) => {
-	const configuration = new Configuration({
-		apiKey: openaiKey,
-	});
-	const openai = new OpenAIApi(configuration);
+	const client = new OpenAI();
 
-	const response = await openai.createImage({
+	const image = await client.images.generate({ 
+		model: "dall-e-3",
 		prompt: prompt,
-		n: 1,
-		size: '1024x1024',
-	}, {
-		timeout: 30000,
 	});
 
-	return response.data.data[0].url;
+
+	return image.data[0].url;
 }
 
 module.exports = {

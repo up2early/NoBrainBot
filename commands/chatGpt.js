@@ -3,28 +3,21 @@ const {
   EmbedBuilder
 } = require("discord.js");
 const logger = require('pino')()
-const { Configuration, OpenAIApi } = require("openai");
-const { openaiKey } = require("../config.js");
+const { OpenAI } = require("openai");
 
 const generateResponse = async (prompt) => {
 
-  const configuration = new Configuration({
-    apiKey: openaiKey,
-  });
-  const openai = new OpenAIApi(configuration);
+  const client = new OpenAI();
 
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: prompt,
-    temperature: 0.7,
-    max_tokens: 256,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  }, {
-    timeout: 30000,
+const response = await client.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": prompt},
+    ]
   });
-  return response.data.choices[0].text;
+
+  return response['choices'][0]['message']['content'];
 }
 
 module.exports = {
